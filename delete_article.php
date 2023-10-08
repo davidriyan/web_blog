@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Hapus Artikel</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>Konfirmasi Hapus Artikel</h1>
+        <?php
+        if (isset($_GET['id'])) {
+            $article_id = $_GET['id'];
+
+            // Koneksi ke database
+            // $conn = mysqli_connect("localhost", "username", "password", "nama_database");
+            include('db_connect.php');
+
+            // Periksa koneksi
+            if (!$conn) {
+                die("Koneksi Gagal: " . mysqli_connect_error());
+            }
+
+            // Query untuk mengambil artikel berdasarkan ID
+            $query = "SELECT * FROM artikel WHERE id = $article_id";
+            $result = mysqli_query($conn, $query);
+
+            if (mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+        ?>
+                <p>Apakah Anda yakin ingin menghapus artikel ini?</p>
+                <p>Judul Artikel: <?php echo $row['judul']; ?></p>
+                <form action="delete_article_process.php" method="POST">
+                    <input type="hidden" name="id" value="<?php echo $article_id; ?>">
+                    <button type="submit" class="btn btn-danger">Hapus</button>
+                    <a href="index.php" class="btn btn-secondary">Batal</a>
+                </form>
+        <?php
+            } else {
+                echo "Artikel tidak ditemukan.";
+            }
+
+            // Tutup koneksi database
+            mysqli_close($conn);
+        } else {
+            echo "ID Artikel tidak valid.";
+        }
+        ?>
+    </div>
+</body>
+
+</html>
